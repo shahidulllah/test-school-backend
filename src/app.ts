@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import connectDB from "./config/db";
 
 dotenv.config();
+connectDB()
 
 const app = express();
 
@@ -11,6 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 //Routes
-app.get("/", (_req, res) => res.send("Test School is Running Successfully !!"));
+
+
+//Checking response
+app.get("/", (_req, res) => res.send("Welcome to Test_School assesment platform..!!"));
 
 export default app;
