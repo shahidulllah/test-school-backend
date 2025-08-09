@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.json({ success: true, accessToken, refreshToken, user });
+    res.json({ success: true, accessToken, user });
   } catch (err: any) {
     res.status(400).json({ success: false, message: err.message });
   }
