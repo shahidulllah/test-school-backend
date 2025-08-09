@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Level } from "./question.interface";
 
 export interface IAnswer {
@@ -8,8 +9,7 @@ export interface IAnswer {
 }
 
 export interface ITestResult {
-  _id?: string;
-  user: string;
+  user: Types.ObjectId;
   step: 1 | 2 | 3;
   levelsTested: Level[];
   questions: string[];
