@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.json({ success: true, accessToken,refreshToken, user });
+    res.json({ success: true, accessToken, refreshToken, user });
   } catch (err: any) {
     res.status(400).json({ success: false, message: err.message });
   }
@@ -64,6 +64,8 @@ export const refresh = async (req: Request, res: Response) => {
   }
 };
 
+//Logout functionality
+
 export const logoutController = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.sub;
@@ -71,6 +73,60 @@ export const logoutController = async (req: Request, res: Response) => {
     await authService.logout(userId, refreshToken);
     res.clearCookie("refreshToken");
     res.json({ success: true });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+//Reset otp functionality
+//==========================
+export const resendOtpController = async (req: Request, res: Response) => {
+  try {
+    const { email, purpose } = req.body;
+    if (!email || !purpose)
+      return res
+        .status(400)
+        .json({ success: false, message: "email and purpose required" });
+
+    const result = await authService.resendOTP(email, purpose);
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res
+        .status(400)
+        .json({ success: false, message: "email required" });
+
+    const result = await authService.forgotPassword(email);
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "email, otp and newPassword required",
+        });
+
+    const result = await authService.resetPasswordWithOTP(
+      email,
+      otp,
+      newPassword
+    );
+    res.json({ success: true, ...result });
   } catch (err: any) {
     res.status(400).json({ success: false, message: err.message });
   }
