@@ -18,6 +18,21 @@ export const DEFAULT_PER_QUESTION_SECONDS = Number(
 );
 
 export async function startTest(userId: string, step: Step, ip?: string) {
+  // if step 1 and user already failed (<25) do not allow retake
+  if (step === 1) {
+    const prevFail = await testResultModel.findOne({
+      user: userId,
+      step: 1,
+      submittedAt: { $exists: true },
+      percentage: { $lt: 25 },
+    });
+    if (prevFail)
+      throw Object.assign(
+        new Error("You have failed Step 1 previously. Retake not allowed."),
+        { status: 403 }
+      );
+  }
+
   const levels = STEP_LEVELS[step];
   // get 44 random questions from those levels
   const questions = await questionModel.aggregate([
@@ -46,7 +61,7 @@ export async function startTest(userId: string, step: Step, ip?: string) {
     step,
     levelsTested: levels,
     questions: questions.map((q: any) => q._id),
-    answers: [], 
+    answers: [],
     totalMarks,
     obtainedMarks: 0,
     percentage: 0,
@@ -103,7 +118,7 @@ export async function submitTest(
   const now = new Date();
   const maxSubmitTime = new Date(
     test.startedAt.getTime() + test.durationSeconds * 1000 + 5 * 1000
-  ); 
+  );
   if (now > maxSubmitTime) {
     // auto-grade as submitted late — we can still grade provided answers contain data, but we will mark as submitted late
     // Option: allow partial grading; here we continue but record submittedAt
