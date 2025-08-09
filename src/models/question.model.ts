@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IQuestion } from "../interfaces/questtion.interface";
+import { IQuestion } from "../interfaces/question.interface";
 
 export interface IQuestionDoc extends IQuestion, Document {}
 
