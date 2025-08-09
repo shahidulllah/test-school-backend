@@ -112,3 +112,83 @@ export const logout = async (userId: string, refreshToken?: string) => {
   await user.save();
   return;
 };
+
+//=====================================
+/**
+ * Resend OTP for a user for a given purpose (email_verification | password_reset)
+ */
+export const resendOTP = async (
+  email: string,
+  purpose: "email_verification" | "password_reset"
+) => {
+  const user = await UserModel.findOne({ email });
+  if (!user) throw new Error("User not found");
+
+  // if user already verified and trying to resend email verification
+  if (purpose === "email_verification" && user.isVerified) {
+    throw new Error("Email already verified");
+  }
+
+  const code = generateOTP();
+  user.otp = { code, expiresAt: otpExpiryDate(15), purpose };
+  await user.save();
+
+  await sendMail(
+    user.email,
+    `Your ${
+      purpose === "email_verification" ? "verification" : "password reset"
+    } OTP`,
+    `OTP: ${code}`
+  );
+
+  return { message: "OTP sent" };
+};
+
+/**
+ * Forgot password: generate OTP for password reset
+ */
+export const forgotPassword = async (email: string) => {
+  const user = await UserModel.findOne({ email });
+  if (!user) throw new Error("User not found");
+
+  const code = generateOTP();
+  user.otp = { code, expiresAt: otpExpiryDate(15), purpose: "password_reset" };
+  await user.save();
+
+  await sendMail(
+    user.email,
+    "Password reset OTP",
+    `Your password reset OTP: ${code}`
+  );
+
+  return { message: "Password reset OTP sent" };
+};
+
+/**
+ * Reset password using OTP
+ */
+export const resetPasswordWithOTP = async (
+  email: string,
+  otp: string,
+  newPassword: string
+) => {
+  const user = await UserModel.findOne({ email });
+  if (!user) throw new Error("User not found");
+  if (!user.otp || user.otp.purpose !== "password_reset")
+    throw new Error("No password reset request found");
+  if (user.otp.expiresAt < new Date()) throw new Error("OTP expired");
+  if (user.otp.code !== otp) throw new Error("Invalid OTP");
+
+  user.password = newPassword; // pre-save hook will hash
+  user.otp = null;
+  await user.save();
+
+  // Optionally notify user about password change
+  await sendMail(
+    user.email,
+    "Password changed",
+    "Your password has been successfully changed."
+  );
+
+  return { message: "Password reset successful" };
+};
