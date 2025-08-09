@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.json({ success: true, accessToken, user });
+    res.json({ success: true, accessToken,refreshToken, user });
   } catch (err: any) {
     res.status(400).json({ success: false, message: err.message });
   }
@@ -45,7 +45,6 @@ export const login = async (req: Request, res: Response) => {
 
 export const refresh = async (req: Request, res: Response) => {
   try {
-    // try cookie first, fallback to body
     const oldRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
     if (!oldRefreshToken) throw new Error("No refresh token provided");
 

@@ -14,14 +14,14 @@ export const sendMail = async (
   to: string,
   subject: string,
   text: string,
-  html?: string
+  message?: string
 ) => {
   const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to,
     subject,
     text,
-    html,
+    html:message,
   });
   return info;
 };
