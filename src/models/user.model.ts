@@ -42,6 +42,12 @@ const UserSchema = new Schema<IUserDoc>(
         enum: ["email_verification", "password_reset", "login"],
       },
     },
+    highestLevel: {
+      type: String,
+      enum: ["A1", "A2", "B1", "B2", "C1", "C2", null],
+      default: null,
+    },
+    certificates: [{ level: String, issuedAt: Date, certificateUrl: String }],
   },
   { timestamps: true }
 );

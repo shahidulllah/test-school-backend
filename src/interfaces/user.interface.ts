@@ -14,4 +14,6 @@ export interface IUser {
   } | null;
   createdAt?: Date;
   updatedAt?: Date;
+  highestLevel?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
+  certificates?: { level: string; issuedAt: Date; certificateUrl?: string }[];
 }
