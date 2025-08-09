@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import protectedRoutes from "./routes/protected.routes";
+import questionRoutes from "./routes/question.routes";
+import examRoutes from "./routes/exam.routes";
 
 dotenv.config();
 connectDB();
@@ -21,6 +23,8 @@ app.use(errorHandler);
 //Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/exam", examRoutes);
 
 //Checking response
 app.get("/", (_req, res) =>
