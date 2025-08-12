@@ -30,7 +30,6 @@ export async function getQuestions(filter: Partial<IQuestion> = {}) {
 
 /**
  * Get random N questions for the provided competency/levels
- * Example: levels = ["A1","A2"], N = 44
  */
 export async function getRandomQuestionsByLevels(
   levels: string[],
