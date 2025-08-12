@@ -12,7 +12,7 @@ const STEP_LEVELS: Record<Step, [string, string]> = {
   3: ["C1", "C2"],
 };
 
-// default per question marks (questions may have marks field)
+// default per question marks
 export const DEFAULT_PER_QUESTION_SECONDS = Number(
   process.env.SECONDS_PER_QUESTION || 60
 );
